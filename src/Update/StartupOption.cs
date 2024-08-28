@@ -27,6 +27,9 @@ namespace Squirrel.Update
         internal bool packageAs64Bit { get; private set; } = false;
         internal bool noDelta { get; private set; } = false;
         internal bool onlyUpdateShortcuts { get; private set; } = false;
+        internal bool autoLaunch { get; private set; } = true;
+        internal string installerSource { get; private set; } = "";
+        internal bool desktopShortcut { get; private set; } = true;
                
         public StartupOption(string[] args) {
            optionSet = Parse(args);
@@ -59,7 +62,7 @@ namespace Squirrel.Update
                 { "i=|icon", "Path to an ICO file that will be used for icon shortcuts", v => icon = v},
                 { "setupIcon=", "Path to an ICO file that will be used for the Setup executable's icon", v => setupIcon = v},
                 { "n=|signWithParams=", "Sign the installer via SignTool.exe with the parameters given", v => signingParameters = v},
-                { "s|silent", "Silent install", _ => silentInstall = true},
+                { "s=|silent=", "Allows to run the installer in the background when 1", v => silentInstall = v!="0"},
                 { "b=|baseUrl=", "Provides a base URL to prefix the RELEASES file packages with", v => baseUrl = v, true},
                 { "a=|process-start-args=", "Arguments that will be used when starting executable", v => processStartArgs = v, true},
                 { "l=|shortcut-locations=", "Comma-separated string of shortcut locations, e.g. 'Desktop,StartMenu'", v => shortcutArgs = v},
@@ -68,6 +71,9 @@ namespace Squirrel.Update
                 { "framework-version=", "Set the required .NET framework version, e.g. net461", v => frameworkVersion = v },
                 { "msi-win64", "Mark the MSI as 64-bit, which is useful in Enterprise deployment scenarios", _ => packageAs64Bit = true},
                 { "updateOnly", "Update shortcuts that already exist, rather than creating new ones", _ => onlyUpdateShortcuts = true},
+                { "auto-launch=", "Allows to specify if the app has to be launched (1) or not (0) after installation", v => autoLaunch = v!="0"},
+                { "source=", "Allows to specify what's the installer source", v => installerSource = v},
+                { "desktop-shortcut=", "Specifies if the app's link should be added (1) or not (0) to the desktop", v => desktopShortcut = v!="0"},
             };
 
             opts.Parse(args);
