@@ -411,7 +411,7 @@ namespace Squirrel
             {
                 var targetDir = getDirectoryForRelease(currentVersion);
                 var args = isInitialInstall ?
-                    String.Format("--squirrel-install {0}", currentVersion) :
+                    String.Format("--squirrel-install {0} --source=\"{1}\" --desktop-shortcut={2}", currentVersion, "dummy", 1) :
                     String.Format("--squirrel-updated {0}", currentVersion);
 
                 var squirrelApps = SquirrelAwareExecutableDetector.GetAllSquirrelAwareApps(targetDir.FullName);
