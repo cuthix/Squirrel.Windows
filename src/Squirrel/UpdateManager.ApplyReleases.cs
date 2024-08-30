@@ -27,7 +27,7 @@ namespace Squirrel
                 this.rootAppDirectory = rootAppDirectory;
             }
 
-            public async Task<string> ApplyReleases(UpdateInfo updateInfo, bool silentInstall, bool attemptingFullInstall, Action<int> progress = null)
+            public async Task<string> ApplyReleases(UpdateInfo updateInfo, bool silentInstall, bool attemptingFullInstall, Action<int> progress = null, InstallOptions opt = null)
             {
                 progress = progress ?? (_ => { });
 
@@ -41,7 +41,7 @@ namespace Squirrel
                 if (release == null) {
                     if (attemptingFullInstall) {
                         this.Log().Info("No release to install, running the app");
-                        await invokePostInstall(updateInfo.CurrentlyInstalledVersion.Version, false, true, silentInstall);
+                        await invokePostInstall(updateInfo.CurrentlyInstalledVersion.Version, false, true, silentInstall, opt);
                     }
 
                     progress(100);
@@ -64,7 +64,7 @@ namespace Squirrel
 
                 progress(90);
 
-                await this.ErrorIfThrows(() => invokePostInstall(newVersion, attemptingFullInstall, false, silentInstall),
+                await this.ErrorIfThrows(() => invokePostInstall(newVersion, attemptingFullInstall, false, silentInstall, opt),
                     "Failed to invoke post-install");
 
                 progress(95);
@@ -407,12 +407,20 @@ namespace Squirrel
                     File.Copy(newSquirrel, Path.Combine(targetDir.Parent.FullName, "Update.exe"), true));
             }
 
-            async Task invokePostInstall(SemanticVersion currentVersion, bool isInitialInstall, bool firstRunOnly, bool silentInstall)
+            async Task invokePostInstall(SemanticVersion currentVersion, bool isInitialInstall, bool firstRunOnly, bool silentInstall, InstallOptions opt = null)
             {
                 var targetDir = getDirectoryForRelease(currentVersion);
                 var args = isInitialInstall ?
-                    String.Format("--squirrel-install {0} --source=\"{1}\" --desktop-shortcut={2}", currentVersion, "dummy", 1) :
+                    String.Format("--squirrel-install {0}", currentVersion) :
                     String.Format("--squirrel-updated {0}", currentVersion);
+
+                if (opt!=null) {
+                    if (!String.IsNullOrEmpty(opt.InstallerSource)) {
+                        args += String.Format(" --source=\"{0}\"", opt.InstallerSource);
+                    }
+
+                    args += String.Format(" --desktop-shortcut={0}", opt.DesktopShortcut ? "1" : "0");
+                }
 
                 var squirrelApps = SquirrelAwareExecutableDetector.GetAllSquirrelAwareApps(targetDir.FullName);
 

@@ -28,6 +28,11 @@ namespace Squirrel
         Update
     }
 
+    public class InstallOptions {
+        public bool DesktopShortcut { get; set; } = true;
+        public string InstallerSource { get; set; } = default(string);
+    }
+
     public interface IUpdateManager : IDisposable, IEnableLogger
     {
         /// <summary>
@@ -76,7 +81,7 @@ namespace Squirrel
         /// <param name="progress">A Observer which can be used to report Progress - 
         /// will return values from 0-100 and Complete, or Throw</param>
         /// <returns>Completion</returns>
-        Task FullInstall(bool silentInstall, Action<int> progress = null);
+        Task FullInstall(bool silentInstall, Action<int> progress = null, InstallOptions opt = null);
 
         /// <summary>
         /// Completely uninstalls the targeted app

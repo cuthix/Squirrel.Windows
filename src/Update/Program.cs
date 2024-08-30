@@ -180,7 +180,11 @@ namespace Squirrel.Update
                 this.ErrorIfThrows(() => File.Copy(Assembly.GetExecutingAssembly().Location, updateTarget, true),
                     "Failed to copy Update.exe to " + updateTarget);
 
-                await mgr.FullInstall(silentInstall, progressSource.Raise);
+                var installOpt = new InstallOptions ();
+                installOpt.InstallerSource = opt.installerSource;
+                installOpt.DesktopShortcut = opt.desktopShortcut;
+
+                await mgr.FullInstall(silentInstall, progressSource.Raise, installOpt);
 
                 await this.ErrorIfThrows(() => mgr.CreateUninstallerRegistryEntry(),
                     "Failed to create uninstaller registry entry");
