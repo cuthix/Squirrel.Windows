@@ -78,6 +78,10 @@ namespace Squirrel.Update
 
             opts.Parse(args);
 
+            if (!autoLaunch) {
+                silentInstall = true;
+            }
+
             // NB: setupIcon and icon are just aliases for compatibility
             // reasons, because of a dumb breaking rename I made in 1.0.1
             setupIcon = setupIcon ?? icon;
